@@ -1,12 +1,9 @@
-var http = require("http");
+var express = require(‘express’); 
+var app = express.createServer(); 
+var port = process.env.PORT || 3000;
 
-function onRequest(request, response) {
-  console.log("Request received. 1");
-  response.writeHead(200, {"Content-Type": "text/plain"});
-  response.write("Hello World");
-  response.end();
-}
+app.get(‘/’, function(request, response) { 
+  response.send(‘Hello Engine Yard Cloud!’);
+});
 
-http.createServer(onRequest).listen(81);
-
-console.log("Server has started.");
+app.listen(port);
