@@ -1,14 +1,14 @@
-/*
+
 var express = require("express"); 
-var app = express.createServer(); 
+var app = express(); 
 var port = process.env.PORT || 3000;
 
 app.get("/", function(request, response) { 
-  response.send("Hello Engine Yard Cloud!");
+  response.send("This is the test... nothting more or less");
 });
 
 app.listen(port);
-*/
+/*
 var http = require("http");
 var port = process.env.PORT || 3000;
 var webServer = http.createServer(function (request, response) {
@@ -17,4 +17,5 @@ var webServer = http.createServer(function (request, response) {
 	response.end();
 }  );
 webServer.listen(port);
+*/
 
