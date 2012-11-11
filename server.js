@@ -1,11 +1,12 @@
 var express = require("express");
 var mongodb = require("mongodb");
+var port = process.env.PORT || 3000;
 var app = express();
 app.get("/", function (req, res){ res.sendfile('public/home.html');;});
 app.get("/insert", insertBook);
 app.get("/read", readBook);
 app.get("/update", updateBook);
-app.listen(1337);
+app.listen(port);
 
 function readBook(req, res)
 {
