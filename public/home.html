@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+ <html>
+ <head>
+        <meta charset="utf-8" />
+        <title>Home Page</title>
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-
+1.0.min.css" /> 
+		<!--  <link rel="stylesheet" href="custom.css" />-->
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+        <script type="text/javascript" src="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.js"></script>
+		<script type="text/javascript">
+      $(function(){
+		//$('#page_heading').text(" AAAAAAA");
+		var bookArray = new Array();
+		bookArray['Genesis'] = 50;
+		bookArray['Exodus'] = 40;
+		bookArray['Leviticus'] = 27;
+		bookArray['Numbers'] = 36;
+		bookArray['Deuteronomy'] = 34;
+		bookArray['Joshua'] = 24;
+		bookArray['Judges'] = 21;
+		bookArray['Ruth'] = 4;
+		bookArray['1 Samuel'] = 31;
+		bookArray['2 Samuel'] = 24;
+		bookArray['1 Kings'] = 22;
+		bookArray['2 Kings'] = 25;
+		bookArray['1 Chronicles'] = 29;
+		bookArray['2 Chronicles'] = 36;
+		bookArray['Ezra'] = 10;
+		bookArray['Nehemiah'] = 13;
+		bookArray['Esther'] = 10;
+		bookArray['Job'] = 42;
+		bookArray['Psalms'] = 150;
+		bookArray['Proverbs'] = 31;
+		bookArray['Ecclesiastes'] = 12;
+		bookArray['Song of Solomon'] = 8;
+		bookArray['Isaiah'] = 66;
+		bookArray['Jeremiah'] = 52;
+		bookArray['Lamentations'] = 5;
+		bookArray['Ezekiel'] = 48;
+		bookArray['Daniel'] = 12;
+		bookArray['Hosea'] = 14;
+		bookArray['Joel'] = 3;
+
+		$("#search-basic")[0].onclick = function(event) {
+		  //alert(this.value);
+		  // We can use any of the three methods listed below 
+          //$(this).attr("value","");
+		  //$(this).val(""); 
+		  $(this).val(function (index, val) { return "";}); 
+		  // Working with Anchor tag	
+			//alert($("div").length);
+			//alert($("a:odd").length);
+			//$("a:odd").each(function () { alert("We are here");});
+			//$("a:odd").css({display: "none"});
+			//$("#custom_css a:odd").css({background: "#006699"});
+			//$("#custom_css a:even").css({background: "#FF9999"});
+			//$("div")[0].css({backgroundcolor=yellow})
+			$("#custom_css a:odd").css({background: "#009990"});
+			$("#custom_css a:even").css({background: "#110001"});
+        }; 
+		
+		$("#search-basic").keyup(function() {
+			//alert(this.value);
+			//console.log(this.value);
+			var counter = 0;var mod_value = 0;var block_css = "";
+			
+			var search_value = this.value;
+			//$("#custom_css a").each(function () { alert("aaaa" + $(this).text());});
+			$("#custom_css_child li").each(function () {
+						//alert(counter);
+						var holdValue = $(this).text();
+						
+						//alert(holdValue);
+						if( holdValue ) {
+							//alert(holdValue.indexOf(search_value));
+							if (holdValue.toLowerCase().indexOf(search_value.toLowerCase()) != 0)
+							{	
+								$(this).attr('class', "");
+								$(this).css({display: "none"});
+							}
+							else
+							{
+								mod_value = counter%3;
+								//alert (mod_value + "__________" + counter);
+								if (mod_value == 0){
+									block_css = "ui-block-a";
+								}else if (mod_value == 1){
+									block_css = "ui-block-b";
+								} else {
+									block_css = "ui-block-c";
+								}
+								counter = counter + 1;
+								$(this).attr('class', block_css);
+								$(this).css({display: "list-item"});
+							}
+						};
+						});	
+				$('#custom_css_child li[class^="ui-block"] a:odd').css({background: "#009990"});
+				$('#custom_css_child li[class^="ui-block"] a:even').css({background: "#110001"});
+			});
+
+		$("#custom_css_child li[class^='ui-block'] a").click(function() {
+			//alert($(this).text());
+			addLineItem(bookArray[$(this).text()], $(this).text());
+			$.mobile.changePage("#chapters");
+			});
+		
+		
+		function addLineItem(noOfChapter, nameOfBook){
+			var toggle = true;
+			for (i=0; i<noOfChapter; ++i)
+			{
+				//alert("it is here");
+				var mod_value = i%3;
+				var block_css = "";
+				if (mod_value == 0){
+					block_css = "ui-block-a";
+				}else if (mod_value == 1){
+					block_css = "ui-block-b";
+				} else {
+					block_css = "ui-block-c";
+				}
+				var liElement = $("<li/>").addClass(block_css);				
+				var achorElement = $("<a/>").addClass("ui-btn ui-btn-up-a");
+				achorElement.attr("href","#chapter_page");
+				if (toggle){
+					achorElement.css({background: "#009990"});
+					toggle = false;
+				} else {
+					achorElement.css({background: "#110001"});
+					toggle = true;
+				}
+				var spanInnerElement = $("<span/>").addClass("ui-btn-inner");
+				var spanElement = $("<span/>").addClass("ui-btn-text").text("Chapter " + (i+1));
+				spanInnerElement.append(spanElement);
+				achorElement.append(spanInnerElement);
+				liElement.append(achorElement);
+				$('#chapters_div_ul').append(liElement);
+			}		
+		}
+
+		$("#chapters_div_ul a").live("click",  function(){ 		
+			//alert("It is coming at click event");
+			loadJSON();
+			$.mobile.changePage("#chapter_page"); });
+			
+		function loadJSON()
+		{
+		
+			var request = $.ajax({
+			  url: "read",
+			  type: "get",
+			  dataType: "json"
+			});
+			request.done(function(msg) {
+			  //alert(msg);
+			  $('#chapter_page_heading').text(msg.book + " " + msg.chapter);
+			  $('head title').text(msg.book + " " + msg.chapter);
+			  //alert("heading Goes here " + msg.book);
+			  //alert(" Details go here " + msg.chapter);
+			  //alert(" Details go here " + msg.detail);
+			  
+			  //$('#chapter_details').text(msg.detail);
+			  //var hold_p = $("<p/>").css({margin: "0.5em", font-family: "Verdana, Geneva, Arial, Helvetica, Sans-Serif" , font-size: "12px"}).text("This is the test");
+			  //var hold_p = $("<p/>").css({color : "red", margin: "0.5em", font : "Verdana, Geneva, Arial, Helvetica, Sans-Serif", fontsize: "12px"}).text("This is the test");
+			  var hold_p = $("<p/>").css({color : "red", margin: "0.5em", font : "Verdana, Geneva, Arial, Helvetica, Sans-Serif", fontsize: "12px"}).text(msg.detail);
+			  
+			  $('#chapter_details').append(hold_p);
+			  
+			});
+
+			request.fail(function(jqXHR, textStatus) {
+				console.log (jqXHR);
+				console.log (textStatus);
+			  alert( "Request failed: " + textStatus );
+			});
+		}
+      });
+
+	   
+	 
+    </script>
+	<style type="text/css">
+	#custom_css {margin-top:.2cm;}
+	</style>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+ <body>
+ <div data-role="page" data-theme="a" >
+        <div data-role="header">
+			<h1 id="page_heading"> Books Listing ...</h1>
+		</div>
+        <div data-role="content"  >
+		<!-- <div data-role="fieldcontain" class="ui-hide-label"> -->
+				<input type="search" name="search" id="search-basic" value="Please " />
+		<!-- </div > -->
+		<div id="custom_css" class="ui-navbar" >
+			<ul id="custom_css_child" class="ui-grid-b" >
+				<li class="ui-block-a" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Genesis</span></span></a></li>
+				<li class="ui-block-b" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Exodus</span></span></a></li>
+				<li class="ui-block-c" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Leviticus</span></span></a></li>
+				<li class="ui-block-a" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Numbers</span></span></a></li>
+				<li class="ui-block-b" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Deuteronomy</span></span></a></li>
+				<li class="ui-block-c" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Joshua</span></span></a></li>
+				<li class="ui-block-a" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Judges</span></span></a></li>
+				<li class="ui-block-b" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Ruth</span></span></a></li>
+				<li class="ui-block-c" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">1 Samuel</span></span></a></li>
+				<li class="ui-block-a" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">2 Samuel</span></span></a></li>
+				<li class="ui-block-b" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">1 Kings</span></span></a></li>
+				<li class="ui-block-c" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">2 Kings</span></span></a></li>
+				<li class="ui-block-a" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">1 Chronicles</span></span></a></li>
+				<li class="ui-block-b" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">2 Chronicles</span></span></a></li>
+				<li class="ui-block-c" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Ezra</span></span></a></li>
+				<li class="ui-block-a" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Nehemiah</span></span></a></li>
+				<li class="ui-block-b" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Esther</span></span></a></li>
+				<li class="ui-block-c" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Job</span></span></a></li>
+				<li class="ui-block-a" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Psalms</span></span></a></li>
+				<li class="ui-block-b" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Proverbs</span></span></a></li>
+				<li class="ui-block-c" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Ecclesiastes</span></span></a></li>
+				<li class="ui-block-a" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Song of Solomon</span></span></a></li>
+				<li class="ui-block-b" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Isaiah</span></span></a></li>
+				<li class="ui-block-c" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Jeremiah</span></span></a></li>
+				<li class="ui-block-a" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Lamentations</span></span></a></li>
+				<li class="ui-block-b" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Ezekiel</span></span></a></li>
+				<li class="ui-block-c" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Daniel</span></span></a></li>
+				<li class="ui-block-a" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Hosea</span></span></a></li>
+				<li class="ui-block-b" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Joel</span></span></a></li>
+				<li class="ui-block-c" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Amos</span></span></a></li>
+				<li class="ui-block-a" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Obadiah</span></span></a></li>
+				<li class="ui-block-b" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Jonah</span></span></a></li>
+				<li class="ui-block-c" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Micah</span></span></a></li>
+				<li class="ui-block-a" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Nahum</span></span></a></li>
+				<li class="ui-block-b" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Habakkuk</span></span></a></li>
+				<li class="ui-block-c" ><a class="ui-btn ui-btn-up-a" href="#chapters" data-transition="flip" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Zephaniah</span></span></a></li>
+			
+			</ul>
+	  </div>
+	</div>
+		
+	<!-- 
+	  <div class="ui-navbar" >
+			<ul class="ui-grid-b" >
+					<li class="ui-block-a"><a  href="#home" data-transition="fade" ><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">Home</span></span></a></li>
+					<li class="ui-block-b"><a href="#today" data-transition="fade" data-theme="a" class="ui-btn ui-btn-up-a"><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">a</span></span></a></li>
+					<li class="ui-block-c"><a href="#revelation" data-transition="fade" data-theme="a" class="ui-btn ui-btn-up-a"><span class="ui-btn-inner" aria-hidden="true"><span class="ui-btn-text">b</span></span></a></li>
+			</ul>
+	  </div>
+	</div>
+    -->
+	<div data-role="footer" data-position="fixed" data-id="toolbar">
+    <div data-role="navbar">
+      <ul>
+        <li><a class="ui-btn-active" href="#home" data-icon="home" data-transition="fade">Home</a></li>
+        <li><a href="#today" data-icon="grid" data-transition="fade">Today</a></li>
+        <li><a href="#revelation" data-icon="star" data-transition="fade">Revelation</a></li>
+        <li><a href="#contactus" data-icon="info" data-transition="fade">Contact Us</a></li>
+      </ul>
+    </div>
+  </div>
+ </div>
+ 
+ 
+ <div data-role="page" data-theme="a" id="chapters">
+        <div data-role="header">
+			<h1> Chapters </h1>
+		</div>
+        <div data-role="content"  >
+		<div id="chapters_div" class="ui-navbar" >
+			<ul id="chapters_div_ul" class="ui-grid-b" >
+				
+			</ul>
+	  </div>
+	</div>
+	<div data-role="footer" data-position="fixed" data-id="toolbar">
+    <div data-role="navbar">
+      <ul>
+        <li><a class="ui-btn-active" href="#home" data-icon="home" data-transition="fade">Home</a></li>
+        <li><a href="#today" data-icon="grid" data-transition="fade">Today</a></li>
+        <li><a href="#revelation" data-icon="star" data-transition="fade">Revelation</a></li>
+        <li><a href="#contactus" data-icon="info" data-transition="fade">Contact Us</a></li>
+      </ul>
+    </div>
+	
+  </div>
+ </div>
+ 
+  <div id="chapter_page"data-role="page" data-theme="a" >
+	<div data-role="header">
+		<h1 id="chapter_page_heading">Individual Chapter</h1>
+	</div>
+	<div data-role="content" data-theme="c" >
+		<div id="chapter_details">
+			
+		</div>
+	</div>
+	<div data-role="footer" data-position="fixed" data-id="toolbar">
+		<div data-role="navbar">
+		  <ul>
+			<li><a class="ui-btn-active" href="#home" data-icon="home" data-transition="fade">Home</a></li>
+			<li><a href="#today" data-icon="grid" data-transition="fade">Today</a></li>
+			<li><a href="#revelation" data-icon="star" data-transition="fade">Revelation</a></li>
+			<li><a href="#contactus" data-icon="info" data-transition="fade">Contact Us</a></li>
+		  </ul>
+		</div>
+	</div>
+ </div>
+ 
+ </body>
+ </html>
